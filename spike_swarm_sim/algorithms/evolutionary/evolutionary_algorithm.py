@@ -5,7 +5,12 @@ import multiprocessing
 import logging
 from collections import deque
 from itertools import repeat, chain
-from mpi4py import MPI
+try:
+    from mpi4py import MPI
+    MPI_AVAILABLE = True
+except:
+    MPI_AVAILABLE = False
+    logging.warning('MPI is not installed. Running without mpi4py.')
 import numpy as np
 import matplotlib.pyplot as plot
 from spike_swarm_sim.algorithms.interfaces import GeneticInterface
@@ -131,11 +136,12 @@ class EvolutionaryAlgorithm:
         - Returns: None
         =============================================================== 
         """
+        use_mpi = MPI.COMM_WORLD.Get_size() > 1 if MPI_AVAILABLE else False
         for k in range(self.init_generation, self.n_generations):
             fitness = []
             t0 = time.time()
             seed = (k) * self.num_evaluations 
-            use_mpi = MPI.COMM_WORLD.Get_size() > 1
+           
             #* MULTIPROCESSING Parallelization
             if not use_mpi and self.n_processes > 1:
                 from spike_swarm_sim.globals import global_states
