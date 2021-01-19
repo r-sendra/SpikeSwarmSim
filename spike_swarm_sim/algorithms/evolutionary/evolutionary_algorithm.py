@@ -157,7 +157,7 @@ class EvolutionaryAlgorithm:
                 rank = comm.Get_rank()
                 size = comm.Get_size()
                 comm.Barrier()
-                indiv_per_core = (self.population_size // size) #! ojo resto #+ (rank == 0) * (self.population_size % size)
+                indiv_per_core = (self.population_size // size) #!+ (rank == 0) * (self.population_size % size)
                 my_individuals = np.arange(indiv_per_core*rank, indiv_per_core*(rank+1))
                 my_fitness = [_run_worker(ii, self.populations, self.world, self.eval_steps, self.num_evaluations,\
                                 self.fitness_fn, seed, k) for ii in my_individuals]
@@ -172,7 +172,7 @@ class EvolutionaryAlgorithm:
                                 self.num_evaluations, self.fitness_fn, seed, k)\
                                 for i in range(self.population_size)]
                 self.fitness = [v for _, v in eval_result]
-        
+            #* No parallelization
             if not use_mpi or MPI.COMM_WORLD.Get_rank() == 0:
                 #* Evolve Population
                 mean_fitness, max_fitness, min_fitness = self.evolve()
