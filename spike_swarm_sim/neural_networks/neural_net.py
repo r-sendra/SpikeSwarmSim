@@ -113,10 +113,8 @@ class NeuralNetwork:
 
         #* --- Create and build Decoders ---
         self.decoders = DecodingWrapper(topology)
-
         #* Aux vars of current stim. and spikes.
         self.stimuli, self.spikes = None, None
-
         #* --- Reset dynamics ---
         self.reset()
 
@@ -127,11 +125,11 @@ class NeuralNetwork:
         Private method devoted to step the synapses and neurons sequentially. 
         ======================================
         - Args:
-            stimuli [dict] -> dict mapping stimuli name and numpy array containing its values.
+            stimuli [dict]: dict mapping stimuli name and numpy array containing its values.
         - Returns:
-            spikes [np.ndarray] -> boolean vector with the generated spikes.
-            soma_currents [np.ndarray] -> vector of currents injected to the neurons.
-            voltages [np.ndarray] -> vector of membrane voltages after neurons step.
+            spikes [np.ndarray]: boolean vector with the generated spikes.
+            soma_currents [np.ndarray]: vector of currents injected to the neurons.
+            voltages [np.ndarray]: vector of membrane voltages after neurons step.
         ======================================
         """
         soma_currents = self.synapses.step(np.r_[stimuli, self.spikes], self.voltages)
@@ -148,9 +146,9 @@ class NeuralNetwork:
             4) Decoding of spikes or activities into actions.
         ======================================
         - Args:
-            stimuli [dict] -> dict mapping stimuli name and numpy array containing its values.
+            stimuli [dict]: dict mapping stimuli name and numpy array containing its values.
         - Returns:
-            actions [dict] -> dict mapping output names and actions.
+            actions [dict]: dict mapping output names and actions.
         ======================================
         """
         if hasattr(self.neurons, 'tau'):
@@ -181,7 +179,7 @@ class NeuralNetwork:
         actions = self.decoders.step(spikes_window[:, self.motor_neurons])
 
         #* --- Debugging stuff (DEBUG MODE) --- #
-        if self.t == self.time_scale * 200 and self.monitor is not None:
+        if self.t == self.time_scale * 1000 and self.monitor is not None:
             vv = np.stack(tuple(self.monitor.get('voltages').values()))
             ii = np.stack(tuple(self.monitor.get('stimuli').values()))
             import pdb; pdb.set_trace()
@@ -201,7 +199,7 @@ class NeuralNetwork:
     
     def ensemble_indices(self, ens_name):
         """ Indices of the neurons of the requested ensemble. """
-        return np.arange(self.pointers[ens_name] - self.subpop_neurons[ens_name]  - self.n_inputs,\
+        return np.arange(self.pointers[ens_name] - self.subpop_neurons[ens_name] - self.n_inputs,\
                 self.pointers[ens_name] - self.n_inputs)
 
     @property
@@ -221,11 +219,11 @@ class NeuralNetwork:
         return self.synapses.weights
 
     def build(self, topology):
-        """ Builder of the ANN topology """
+        """ Builder of the ANN topology. """
         return self.synapses.build(copy.deepcopy(topology))
 
     def reset(self):
-        "Reset process of all the neural network dynamics."
+        """ Reset process of all the neural network dynamics. """
         self.t = 0
         self.neurons.reset()
         self.synapses.reset()

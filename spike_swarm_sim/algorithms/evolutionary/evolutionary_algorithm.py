@@ -16,7 +16,8 @@ import matplotlib.pyplot as plot
 from spike_swarm_sim.algorithms.interfaces import GeneticInterface
 from spike_swarm_sim.utils import flatten_dict, DataLogger, without_duplicates
 from  spike_swarm_sim.sensors.utils import list_sensors
-from  spike_swarm_sim.actuators.utils import list_actuators               
+from  spike_swarm_sim.actuators.utils import list_actuators     
+from spike_swarm_sim.globals import global_states          
 
 def get_info(name, robots, world,):
     """
@@ -144,7 +145,6 @@ class EvolutionaryAlgorithm:
            
             #* MULTIPROCESSING Parallelization
             if not use_mpi and self.n_processes > 1:
-                from spike_swarm_sim.globals import global_states
                 with multiprocessing.Pool(processes=self.n_processes) as pool:
                     pool_args = zip(range(self.population_size), *[map(lambda x: copy.deepcopy(x), repeat(v))\
                                 for v in iter([self.populations, self.world, self.eval_steps, self.num_evaluations,\

@@ -33,14 +33,13 @@ def merge_dicts(dicts):
 
 
 def without_duplicates(iterable):
-    """ 
-    Transforms an input Iterator into the same Iterator without duplicates.
-    ======================================================================
+    """ Transforms an input Iterator into the same Iterator without duplicates.
+    ===========================================================================
     - Args: 
         iterable [Iterator] : iterator to remove duplicates from.
     - Yields:
         Value of the input iterable if the value has not been already seen. 
-    =======================================================================
+    ============================================================================
     """
     visited = []
     for val in iterable:
@@ -88,6 +87,9 @@ def any_duplicates(iterable):
             return True
         seen.append(elem)
     return False
+
+def isinstance_of_any(var, list_types):
+    return any([isinstance(var, type_elem) for type_elem in list_types])
 
 def save_pickle(dc, filename):
     with open(filename + '.pickle', 'wb') as f:

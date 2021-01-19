@@ -1,17 +1,17 @@
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-from spike_swarm_sim.register import encoding_registry, encoders
+from spike_swarm_sim.register import encoding_registry, encoders, receptive_fields
 from spike_swarm_sim.utils import increase_time
-from spike_swarm_sim.neural_networks import receptive_field as rf
 from spike_swarm_sim.algorithms.interfaces import GET, SET, LEN, INIT
 from .neuron_models import LIFModel
+from spike_swarm_sim.neural_networks.receptive_field import *
 
 class EncodingWrapper:
     """ Wrapper for gathering all the encoders of the different stimulus. 
     It contains a dict mapping sensor names to Encoder instances.
     =====================================================================
-    - Params : 
+    - Params:
         topology [dict] : configuration dict of the overall topology.
     """
     def __init__(self, topology=None):
@@ -29,7 +29,9 @@ class EncodingWrapper:
     def build(self, topology):
         """ Builds the encoders using the topology config. dict. """
         for name, enc in topology['encoding'].items():
-            receptive_field = rf.GaussianReceptiveField(n_inputs=topology['stimuli'][name]['n'], **enc['receptive_field'])
+            receptive_field_cls = receptive_fields[enc['receptive_field']['name']]
+            receptive_field = receptive_field_cls(n_inputs=topology['stimuli'][name]['n'],\
+                        **enc['receptive_field']['params'])
             self._encoders.update({topology['stimuli'][name]['sensor'] :
                     encoders[enc['scheme']](topology['stimuli'][name]['n'],\
                     topology['time_scale'], receptive_field, dt=1e-3)})

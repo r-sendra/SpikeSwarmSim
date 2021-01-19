@@ -13,6 +13,8 @@ fitness_functions = {}
 algorithms = {}
 initializers = {}
 env_perturbations = {}
+receptive_fields = {}
+
 
 def world_object_registry(*args, **kwargs):
     def wrapper(cls):
@@ -108,5 +110,12 @@ def env_perturbation_registry(*args, **kwargs):
     def decorator(cls):
         name = (cls.__name__, kwargs['name'])['name' in kwargs.keys()]
         env_perturbations[name] = cls
+        return cls
+    return decorator
+
+def receptive_field_registry(*args, **kwargs):
+    def decorator(cls):
+        name = (cls.__name__, kwargs['name'])['name' in kwargs.keys()]
+        receptive_fields[name] = cls
         return cls
     return decorator

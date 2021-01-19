@@ -12,8 +12,8 @@ class SynapsesBuilder(object):
         self.stimuli = topology['stimuli']
         for k in self.stimuli.keys():
             if 'encoding' in topology.keys():
-                if 'n_neurons' in topology['encoding'][k]['receptive_field']:
-                    self.stimuli[k]['n'] *= topology['encoding'][k]['receptive_field']['n_neurons']
+                if 'n_neurons' in topology['encoding'][k]['receptive_field']['params']:
+                    self.stimuli[k]['n'] *= topology['encoding'][k]['receptive_field']['params']['n_neurons']
                     # self.stimuli[k]['n'] = topology['encoding'][k]['receptive_field']['n_neurons']
         self.synapses = topology['synapses']
         self.ensembles = topology['ensembles']

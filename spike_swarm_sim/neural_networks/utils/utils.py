@@ -2,9 +2,13 @@ import logging
 import inspect
 from spike_swarm_sim.utils import merge_dicts, any_duplicates, ConfigException
 import spike_swarm_sim.register as reg
+from spike_swarm_sim.neural_networks.receptive_field import ReceptiveField
+from spike_swarm_sim.neural_networks.decoding import Decoder
 
 #* ---- CONFIGURATION CHECK FUNCTIONS ---- #
-def ensembles_checker(ensembles_config, neuron_model):
+def ensembles_checker(topology):
+    ensembles_config = topology['ensembles']
+    neuron_model = topology['neuron_model']
     if len(ensembles_config) == 0:
         raise ConfigException('No ANN ensemble specified.')
     for name, ens in ensembles_config.items():
@@ -12,7 +16,7 @@ def ensembles_checker(ensembles_config, neuron_model):
             raise ConfigException('Ensemble neurons must be greater than 0. '\
                 'Error in ensemble {}'.format(name))
         neuron_args = {key : val for key, val in inspect.getfullargspec(\
-            reg.neuron_models[neuron_model]).kwonlydefaults.items()}
+                        reg.neuron_models[neuron_model]).kwonlydefaults.items()}
         if 'params' in ens:
             for p_name, param in ens['params'].items():
                 if p_name not in neuron_args:
@@ -52,10 +56,57 @@ def synapses_checker(topology):
         raise ConfigException('There are duplicate connections.')
     # if synapse_params is not None:
 
-def encoding_checker(encoding_config):
-    pass
-def decoding_checker(decoding_config):	
-    pass
+def encoding_checker(topology):
+    for key, encoder in topology['encoding'].items():
+        # Check that encoding input exists
+        if key not in topology['stimuli']:
+            raise ConfigException('Input "{}" of encoder does not exist.'.format(key))
+        # Check that encoder exists
+        if encoder['scheme'] not in reg.encoders:
+            raise ConfigException('Encoder "{}" does not exist. '\
+                'Available encoders are {}'.format(encoder['scheme'], tuple(reg.encoders)))
+        # Check receptive field
+        rf = encoder['receptive_field']
+        if 'name' in rf and rf['name'] not in reg.receptive_fields:
+             raise ConfigException('Receptive field "{}" of encoder "{}" is not implemented. '\
+                    'Available receptive fields are {}.'\
+                    .format(rf['name'], encoder['scheme'], tuple(reg.receptive_fields)))
+    
+        rf_base_inspection = inspect.getfullargspec(ReceptiveField)
+        rf_args = merge_dicts([inspect.getfullargspec(reg.receptive_fields[rf['name']]).kwonlydefaults,\
+                    {key : val for key, val in zip(reversed(rf_base_inspection[0]), reversed(rf_base_inspection[3]))}])
+        if 'params' in rf:
+            for p_name, param in rf['params'].items():
+                if p_name not in rf_args:
+                    raise ConfigException('The parameter "{}" does not exist in receptive field "{}" '\
+                        'of encoder {}. Available receptive field arguments are {}.'\
+                        .format(p_name, rf['name'], key, tuple(rf_args.keys())))
+                # if type(param) != type(rf_args[p_name]):
+                #     raise ConfigException('Wrong type of parameter {} in encoder "{}". Type {} '\
+                #         'should have been received.'.format(p_name, key, type(rf_args[p_name]).__name__))
+
+
+def decoding_checker(topology):	
+    for key, decoder in topology['decoding'].items():
+        if key not in topology['outputs']:
+            raise ConfigException('Output "{}" of decoder does not exist.'.format(key))
+
+        if decoder['scheme'] not in reg.decoders:
+            raise ConfigException('Decoder "{}" does not exist. '\
+                'Available decoders are {}'.format(decoder['scheme'], tuple(reg.decoders)))
+
+        dec_base_inspection = inspect.getfullargspec(Decoder)
+        dec_args = merge_dicts([inspect.getfullargspec(reg.decoders[decoder['scheme']]).kwonlydefaults,\
+                    {key : val for key, val in zip(reversed(dec_base_inspection[0]), reversed(dec_base_inspection[3]))}])
+        if 'params' in decoder:
+            for p_name, param in decoder['params'].items():
+                if p_name not in dec_args:
+                    raise ConfigException('The parameter "{}" does not exist in decoder "{}". '\
+                        'Available decoder arguments are {}.'\
+                        .format(p_name, key, tuple(dec_args.keys())))
+                # if type(param) != type(dec_args[p_name]):
+                #     raise ConfigException('Wrong type of parameter {} in decoder "{}". Type {} '\
+                #         'should have been received.'.format(p_name, key, type(dec_args[p_name]).__name__))
 
 def neural_net_checker(topology):
     # Check compulsory variables.
@@ -77,7 +128,7 @@ def neural_net_checker(topology):
     for name, stim in topology['stimuli'].items():
         if 'n' in stim and stim['n'] <= 0.:
             raise ConfigException('Input neurons must be greater than 0. '\
-                'Error in input {}'.format(name))
+                'Error in input {}.'.format(name))
         if 'sensor' not in stim:
             raise ConfigException('No associated sensors specified in input {}.'\
                 .format(name))
@@ -92,8 +143,10 @@ def neural_net_checker(topology):
             raise ConfigException('Specified ensemble {} of output {} does not exist.'\
                 .format(out['ensemble'], name))
         #TODO Check that actuator exists in robot. It requires association between ANN and robot.
-    ensembles_checker(topology['ensembles'], topology['neuron_model'])
+    ensembles_checker(topology)
     synapses_checker(topology)
+    encoding_checker(topology)
+    decoding_checker(topology)
 
 
 #* ---- CONFIGURATION AUTOCOMPLETION FUNCTIONS ---- #
