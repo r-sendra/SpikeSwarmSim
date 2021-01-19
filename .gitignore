@@ -1,8 +1,0 @@
-*/**/__pycache__
-__pycache__
-.vscode
-.svn
-__backups
-.pytest_cache
-scripts
-examples
