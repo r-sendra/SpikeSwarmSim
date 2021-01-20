@@ -3,7 +3,7 @@ from spike_swarm_sim.register import actuator_registry
 from spike_swarm_sim.utils import softmax
 
 @actuator_registry(name='wireless_transmitter')
-class WirelessTransmitter:
+class CommunicationTransmitter:
     """ Communication transmitter actuator. It isotropically transmits a 
     frame with a message and its context. The propagation simulation is 
     implemented at the receiver side, this class only updates the transmitted 
