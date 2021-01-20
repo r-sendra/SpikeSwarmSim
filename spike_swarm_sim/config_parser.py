@@ -151,10 +151,11 @@ def config_autocompletion(cfg_dict):
         # Autocomplete each population
         for pop in alg_dict['populations'].values():
             #! En el futuro comprobar que el alg hereda de Evolutionary Alg.
-            for var, default in zip(['selection_operator', 'crossover_operator','mutation_operator',\
+            for var, default in zip(['selection_operator', 'crossover_operator', 'mutation_operator',\
                     'mating_operator', 'mutation_prob', 'crossover_prob', 'num_elite'],\
                     ['nonlin_rank', 'blxalpha', 'gaussian', 'random', 0.05, 1, 1]):
-                pop[var] = default
+                if var not in pop:
+                    pop[var] = default
 
     #* Autocomplete World config
     world_dict = cfg_dict['world']

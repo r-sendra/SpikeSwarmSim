@@ -62,20 +62,6 @@ def combination_crossover(parents, random_pairs=False, crossover_prob=1., alpha=
         offspring.append((parent2, np.hstack(new2))[do_crossover])
     return offspring
 
-# def blxalpha_beta_crossover(parents, random_pairs=False, crossover_prob=1., alpha=.3):
-#     offspring = []
-#     if random_pairs: np.random.shuffle(parents)
-#     if len(parents) % 2: offspring.append(parents.pop(0))
-#     for parent1, parent2 in zip(parents[::2], parents[1::2]):
-#         genes_min = np.min((parent1, parent2),axis=0)-alpha*np.abs(parent1-parent2)
-#         genes_max = np.max((parent1, parent2),axis=0)+alpha*np.abs(parent1-parent2)
-#         new1 = np.random.random(size=parent1.shape)*(genes_max - genes_min) + genes_min
-#         new2 = np.random.random(size=parent2.shape)*(genes_max - genes_min) + genes_min
-#         do_crossover = np.random.random() < crossover_prob
-#         offspring.append((parent1, np.hstack(new1))[do_crossover])
-#         offspring.append((parent2, np.hstack(new2))[do_crossover])
-#     return offspring
-
 @evo_operator_registry(name='multipoint_crossover')
 def multipoint_crossover(parents, ncuts=3, crossover_prob=1.):
     offspring = []
@@ -101,7 +87,7 @@ def multipoint_crossover(parents, ncuts=3, crossover_prob=1.):
 @evo_operator_registry(name='simulated_binary_crossover')
 def simulated_binary_crossover(parents, eta=.5, crossover_prob=1.):#! Mirar valores eta
     offspring = []
-    if len(parents) % 2: 
+    if len(parents) % 2:
         offspring.append(parents.pop(np.random.choice(len(offspring))))
     for parent1, parent2 in zip(parents[::2], parents[1::2]):
         mu = np.random.random()
@@ -115,20 +101,25 @@ def simulated_binary_crossover(parents, eta=.5, crossover_prob=1.):#! Mirar valo
 
 @evo_operator_registry(name='pcx_crossover')
 def pcx_crossover(parents, crossover_prob=1.):
-   pass 
+    #TODO
+    raise NotImplementedError 
 
 
-def combined_crossover(parents, eta=1., crossover_prob=1.): 
-    offspring = []
-    # if len(parents) % 2: 
-    #     offspring.append(parents.pop(np.random.choice(len(offspring))))
-    # for parent1, parent2 in zip(parents[::2], parents[1::2]):
-    #     mu = np.random.random()
-    #     xover = np.random.choice([blxalpha_crossover, multipoint_crossover, simulated_binary_crossover])    
-    #     beta = ((2*mu, .5/(1-mu))[mu >= .5]) ** (1/(eta+1))
-    #     new1 = .5 * ((1+beta) * parent1 + (1-beta) * parent2)
-    #     new2 = .5 * ((1-beta) * parent1 + (1+beta) * parent2)
-    #     do_crossover = np.random.random() < crossover_prob
-    #     offspring.append((parent1, np.hstack(new1))[do_crossover])
-    #     offspring.append((parent2, np.hstack(new2))[do_crossover])
-    # return offspring
+def combined_crossover(parents, eta=1., crossover_prob=1.):
+    #TODO
+    raise NotImplementedError 
+
+
+# def blxalpha_beta_crossover(parents, random_pairs=False, crossover_prob=1., alpha=.3):
+#     offspring = []
+#     if random_pairs: np.random.shuffle(parents)
+#     if len(parents) % 2: offspring.append(parents.pop(0))
+#     for parent1, parent2 in zip(parents[::2], parents[1::2]):
+#         genes_min = np.min((parent1, parent2),axis=0)-alpha*np.abs(parent1-parent2)
+#         genes_max = np.max((parent1, parent2),axis=0)+alpha*np.abs(parent1-parent2)
+#         new1 = np.random.random(size=parent1.shape)*(genes_max - genes_min) + genes_min
+#         new2 = np.random.random(size=parent2.shape)*(genes_max - genes_min) + genes_min
+#         do_crossover = np.random.random() < crossover_prob
+#         offspring.append((parent1, np.hstack(new1))[do_crossover])
+#         offspring.append((parent2, np.hstack(new2))[do_crossover])
+#     return offspring

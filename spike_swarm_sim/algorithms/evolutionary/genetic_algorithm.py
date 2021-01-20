@@ -33,7 +33,7 @@ class GeneticAlgorithm(EvolutionaryAlgorithm):
         }
         file_name = 'spike_swarm_sim/checkpoints/populations/' + self.checkpoint_name
         save_pickle(pop_checkpoint, file_name)
-        logging.info('Successfully saved evolution checkpoint.')  
+        logging.info('Successfully saved evolution checkpoint.')
         
     def load_population(self):
         """ Loads a previously saved checkpoint to resume evolution.

@@ -1,5 +1,4 @@
 import numpy as np
-import pdb
 from spike_swarm_sim.register import evo_operator_registry
 
 @evo_operator_registry(name='random_mating')
@@ -13,18 +12,15 @@ def nearest_fitness(parents, fitness):
 
 def nearest_genotype(parents, fitness=None):
     np.random.shuffle(parents)
-    
     genotype = parents.pop(0)
     parents_ordered = [genotype.copy()]
     while len(parents):
         nearest = np.argmin([np.linalg.norm(genotype - v) for j, v in enumerate(parents)])
         genotype = parents.pop(nearest)
         parents_ordered.append(genotype.copy())
-    # pdb.set_trace()
     return parents_ordered
 
 def speciation(parents, fitness, n_species=2):
-    
     parents_ordered = []
     from sklearn.cluster import KMeans
     kmeans = KMeans(n_clusters=n_species)
@@ -34,8 +30,5 @@ def speciation(parents, fitness, n_species=2):
         species_pop = [parents[i] for i, vv in enumerate(species == sp) if vv]
         np.random.shuffle(species_pop)
         parents_ordered.extend(species_pop)
-    # import matplotlib.pyplot as plot
-    # plot.boxplot([np.array(fitness)[species == i] for i in range(3)])
-    # pdb.set_trace()
     return parents_ordered
 

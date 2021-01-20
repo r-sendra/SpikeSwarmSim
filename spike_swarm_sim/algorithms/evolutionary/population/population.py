@@ -13,7 +13,6 @@ class Population:
         self.segment_lengths = []
         self.objects = objects
         self.pop_size = pop_size
-        
         self.max_vals = max_vals if isinstance(max_vals, list) else [max_vals for _ in objects]
         self.min_vals = min_vals if isinstance(min_vals, list) else [min_vals for _ in objects]
         self.encoding = encoding
@@ -21,37 +20,36 @@ class Population:
         self.crossover_operator = evo_operators[crossover_operator+'_crossover']
         self.mutation_operator = evo_operators[mutation_operator+'_mutation']
         self.mating_operator = evo_operators[mating_operator+'_mating']
-        self.mutation_prob = mutation_prob # .25 #mutation_prob
-        self.crossover_prob = crossover_prob # .9
+        self.mutation_prob = mutation_prob
+        self.crossover_prob = crossover_prob
         self.num_elite = num_elite
     
     def step(self, fitness_vector):
-        # Apply Selection operator
+        #* --- Apply Selection operator ---
         parents, parents_fitness = self.selection_operator(self.population.copy(), fitness_vector.copy(),\
                     len(self) - self.num_elite)
-        # Apply Mating operator
+        #* --- Apply Mating operator ---
         parents = self.mating_operator(parents, parents_fitness)
          
-        # Apply Crossover operator
+        #* --- Apply Crossover operator ---
         offspring = self.crossover_operator(parents, crossover_prob=self.crossover_prob)
         
-        # Apply mutation operator
+        #* --- Apply mutation operator ---
         mutation_sigma = 0.1 #(self.max_vector - self.min_vector).copy() / 6
         offspring = self.mutation_operator(offspring, mutation_prob=self.mutation_prob, sigma=mutation_sigma,\
                             max_vals=1, min_vals=0)
                             #  max_vals=self.max_vector, min_vals=self.min_vector)
 
-        # Constrain values
+        #* --- Constrain values ---
         if self.encoding == 'real':
-            # pdb.set_trace()
             # offspring = [np.clip(v, a_min=self.min_vector, a_max=self.max_vector) for v in offspring]
             offspring = [np.clip(v, a_min=0, a_max=1) for v in offspring]
 
-        # Save elite based on highest fitness
+        #* --- Save elite based on highest fitness ---
         fitness_order = np.argsort(fitness_vector.copy())[::-1]
         elite = [self.population[idx].copy() for idx in fitness_order[:self.num_elite]]
 
-        # Update new population
+        #* --- Update new population ---
         self.population = elite + offspring
 
         # Dynamic Mutation Prob.

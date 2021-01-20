@@ -117,8 +117,6 @@ class NeuralNetwork:
         self.stimuli, self.spikes = None, None
         #* --- Reset dynamics ---
         self.reset()
-        self.encoders.get('light_sensor').plot(np.array([0.5]))
-        import pdb; pdb.set_trace()
 
     @increase_time
     @monitor
