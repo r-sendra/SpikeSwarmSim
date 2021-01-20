@@ -29,9 +29,12 @@ class EncodingWrapper:
     def build(self, topology):
         """ Builds the encoders using the topology config. dict. """
         for name, enc in topology['encoding'].items():
-            receptive_field_cls = receptive_fields[enc['receptive_field']['name']]
-            receptive_field = receptive_field_cls(n_inputs=topology['stimuli'][name]['n'],\
-                        **enc['receptive_field']['params'])
+            receptive_field = None
+            if 'receptive_field' in enc and enc['receptive_field'] is not None and\
+                len(enc['receptive_field']) > 0:
+                receptive_field_cls = receptive_fields[enc['receptive_field']['name']]
+                receptive_field = receptive_field_cls(n_inputs=topology['stimuli'][name]['n'],\
+                            **enc['receptive_field']['params'])
             self._encoders.update({topology['stimuli'][name]['sensor'] :
                     encoders[enc['scheme']](topology['stimuli'][name]['n'],\
                     topology['time_scale'], receptive_field, dt=1e-3)})
@@ -48,9 +51,9 @@ class EncodingWrapper:
 
     def get(self, key):
         """ Return the encoder corresponding to key."""
-        if key not in self._encoders.keys():
+        if key not in self._encoders:
             raise Exception(logging.error('Encoder corresponding to key '\
-                '{} does not exist.'.format(key)))
+                '"{}" does not exist.'.format(key)))
         return self._encoders[key]
 
     @GET('encoders:weights')
@@ -87,9 +90,10 @@ class Encoder:
     - Params:
         n_stimuli [int]: dimension of the stumuli vector to encode.
         time_scale [int]: ratio between neuronal and environment time scales.
-        receptive_field [ReceptiveField]: receptive field instance that, 
+        receptive_field [ReceptiveField or None]: receptive field instance that, 
             normally, encodes stimulus into firing rates or delays to produce
-            spikes. RFs also augment the input dim.
+            spikes. RFs also augment the input dim. If the encoder doesn't employ
+            receptive fields, the argument is None
     =============================================================
     """
     def __init__(self, n_stimuli, time_scale, receptive_field):
@@ -121,6 +125,9 @@ class Encoder:
         and the corresponding firing rate or delay in the y-axis. The 
         right suplot shows the corresponding encoded spike trains for 1000 time steps.
         """
+        if self.receptive_field is None:
+            raise Exception(logging.error('Unable to plot Encoding if the '\
+            'receptive field is None.'))
         stimuli = np.array([stimuli]) if type(stimuli) not in [list, np.ndarray] else stimuli
         f, axes = plt.subplots(1, 2, figsize=(15, 7))
         axes[0] = self.receptive_field.plot(stimuli, ax=axes[0])
@@ -140,6 +147,9 @@ class Encoder:
         """ Plots the Firing Rate - Stimulus curve depicting the approx. spiking rate 
         of the encoded stimulus.
         """
+        if self.receptive_field is None:
+            raise Exception(logging.error('Unable to plot Rate-Stimulus curve if the '\
+            'receptive field is None.'))
         f, ax = plt.subplots()
         xx = np.linspace(self.receptive_field.min_stim, self.receptive_field.max_stim, 200)
         firing_rates = np.empty((0, self.receptive_field.n_neurons))

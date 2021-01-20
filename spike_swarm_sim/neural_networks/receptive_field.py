@@ -24,7 +24,7 @@ class ReceptiveField(ABC):
     ==============================================================================
     """
     def __init__(self, n_inputs, n_neurons=1, trainable=False, max_val=1., min_val=0.,
-                min_stim=0, max_stim=1, inverted=False):
+                min_stim=0., max_stim=1., inverted=False):
         self.n_inputs = n_inputs
         self.n_neurons = n_neurons
         self.trainable = trainable
@@ -77,7 +77,9 @@ class ReceptiveField(ABC):
 
 @receptive_field_registry(name='identity_receptive_field')
 class IdentityReceptiveField(ReceptiveField):
-    """ Identity or dummy receptive field that returns the same value 
+    """ Identity or dummy receptive field. It merely serves as a placeholder 
+    when the neural encoder doesn't employ receptive field. The number of
+    RF neurons/nodes must be always 1 (otherwise it would be ignored). 
     """
     def __init__(self, *args, **kwargs):
         super(IdentityReceptiveField, self).__init__(*args, **kwargs)
@@ -85,8 +87,8 @@ class IdentityReceptiveField(ReceptiveField):
             logging.warning('Identity receptive field does not support '\
                 'multiple sensing nodes. Using n_neurons=1 instead.')
 
-    def receptive_function(self, s, center):
-        return s
+    def receptive_function(self, stim, center):
+        return stim
 
     def __call__(self, stim):
         return stim
@@ -99,55 +101,59 @@ class GaussianReceptiveField(ReceptiveField):
     - Args:
         sigma [float]: std. dev. of the gaussian receptive fields.
     """
-    def __init__(self, *args, sigma=6, **kwargs):
+    def __init__(self, *args, sigma=6., **kwargs):
         super(GaussianReceptiveField, self).__init__(*args, **kwargs)
         self.sigma = sigma
 
-    def receptive_function(self, s, center):
-        return np.exp(-self.sigma * np.linalg.norm(s - center) ** 2)
-
-
-@receptive_field_registry(name='linear_receptive_field')
-class LinearReceptiveField(ReceptiveField):
-    def __init__(self,  *args, **kwargs):
-        super(LinearReceptiveField, self).__init__(*args, **kwargs, trainable=True)
-        self.weights = None
-        self.initialize()
-
-    def receptive_function(self, s, center):
-        Phi = self.weights[:self.n_inputs*self.n_neurons].reshape(self.n_inputs, self.n_neurons)
-        bias = self.weights[-self.n_neurons:] * 0 #! unused
-        return (Phi.T.dot(s) + bias).flatten()
-
-    def initialize(self):
-        base_rf = [[np.exp(-np.abs(x - center)) for x in range(self.n_inputs)]\
-                   for center in np.linspace(0, self.n_inputs, self.n_neurons)]
-        Phi = np.array(base_rf)
-        self.weights = Phi.flatten()
+    def receptive_function(self, stim, center):
+        return np.exp(-self.sigma * np.linalg.norm(stim - center) ** 2)
 
 @receptive_field_registry(name='triangular_receptive_field')
 class TriangularReceptiveField(ReceptiveField):
-    def __init__(self, slope=5, *args, **kwargs):
+    """ Triangular receptive field. It encodes the stimuli 
+    of each RF neuron as 1 - slope * |stim - center|. Only supported for
+    1D stim.
+    """
+    def __init__(self, slope=5., *args, **kwargs):
         super(TriangularReceptiveField, self).__init__(*args, **kwargs)
         self.slope = slope
 
-    def receptive_function(self, s, center):
-        return np.clip(1 - self.slope * np.abs(s - center), a_min=0., a_max=1.)
+    def receptive_function(self, stim, center):
+        return np.clip(1 - self.slope * np.abs(stim - center), a_min=0., a_max=1.)
 
 @receptive_field_registry(name='conic_receptive_field')
 class ConicReceptiveField(ReceptiveField):
-    def __init__(self, slope=5, *args, **kwargs):
+    def __init__(self, slope=5., *args, **kwargs):
         super(ConicReceptiveField, self).__init__(*args, **kwargs)
         self.slope = slope
 
-    def receptive_function(self, s, center):
-        return np.clip(1 - self.slope * np.linalg.norm(s - center), a_min=0., a_max=1.)
+    def receptive_function(self, stim, center):
+        return np.clip(1 - self.slope * np.linalg.norm(stim - center), a_min=0., a_max=1.)
 
 @receptive_field_registry(name='parabolic_receptive_field')
 class ParabolicReceptiveField(ReceptiveField):
-    def __init__(self, slope=5, *args, **kwargs):
+    def __init__(self, slope=5., *args, **kwargs):
         super(ParabolicReceptiveField, self).__init__(*args, **kwargs)
         self.slope = slope
 
-    def receptive_function(self, s, center):
-        return np.clip(1 - self.slope * np.linalg.norm(s - center) ** 2, a_min=0., a_max=1.)
+    def receptive_function(self, stim, center):
+        return np.clip(1 - self.slope * np.linalg.norm(stim - center) ** 2, a_min=0., a_max=1.)
+
+#TODO
+# @receptive_field_registry(name='linear_receptive_field')
+# class LinearReceptiveField(ReceptiveField):
+#     def __init__(self,  *args, **kwargs):
+#         super(LinearReceptiveField, self).__init__(*args, **kwargs, trainable=True)
+#         self.weights = np.ones(self.n_inputs * self.n_neurons + self.n_neurons)
+#         self.initialize()
+
+#     def receptive_function(self, stim, center):
+#         Phi = self.weights[:self.n_inputs * self.n_neurons].reshape(self.n_inputs, self.n_neurons)
+#         bias = self.weights[-self.n_neurons:]
+#         return (Phi.T.dot(stim) + bias).flatten()
+
+#     def initialize(self):
+#         base_rf = [[np.exp(-np.abs(x - center)) for x in range(self.n_inputs)]\
+#                    for center in np.linspace(0, self.n_inputs, self.n_neurons)]
+#         Phi = np.array(base_rf)
+#         self.weights = Phi.flatten()

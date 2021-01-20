@@ -1,4 +1,3 @@
-import warnings
 import logging
 
 def list_actuators(robot):
@@ -13,7 +12,6 @@ def list_actuators(robot):
             actuator_list.append(name)
     return actuator_list
 
-
 def check_actuator_cfg(actuator_name, actuator_params):
     if 'min_thresh' in actuator_params and actuator_params['min_thresh'] <= 0:
         raise Exception(logging.error('The min. threshold of the wheels actuator must be greater than 0'))
@@ -25,7 +23,6 @@ def check_actuator_cfg(actuator_name, actuator_params):
     if 'msg_length' in actuator_name and actuator_params['msg_length'] <= 0:
         raise Exception(logging.error('The length of the message of {} '\
             'must be greater than 0.'.format(actuator_name)))
-
 
 def autocomplete_actuator_cfg(actuator_name, actuator_params):
     if actuator_name == 'wireless_transmitter':
