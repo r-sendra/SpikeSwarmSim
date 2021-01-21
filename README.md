@@ -51,31 +51,31 @@ The configuration file is composed by the following main blocks:
 
 Firstly, an example of ANN declaration through the `topology` field is shown below. It exemplifies the use of rate neuron 
 models as building blocks of CTRNNs:
-```
+```python
 "topology" : {
-    "dt" : 0.1, \\ Euler step of the ANN.
-    "time_scale" : 20, \\ Ratio between neuronal and environment time scales (neurons are 20 times faster).
-    "stimuli": { \\ Declaration of stimuli fed to the ANN. 
-        "W1" : {"n" : 3, "sensor" : "wireless_receiver:msg"}, \\ 3D message of IR communication receiver.
-        "W2" : {"n" : 2, "sensor" : "wireless_receiver:receiving_direction"}, \\ 2D message orientation msg.
-        "W4" : {"n" : 1, "sensor" : "wireless_receiver:signal"}, \\ Signal strength
-        "W6" : {"n" : 6, "sensor" : "light_sensor"} \\ Light sensor (6 sectors).
+    "dt" : 0.1, # Euler step of the ANN.
+    "time_scale" : 20, # Ratio between neuronal and environment time scales (neurons are 20 times faster).
+    "stimuli": { # Declaration of stimuli fed to the ANN. 
+        "W1" : {"n" : 3, "sensor" : "wireless_receiver:msg"}, # 3D message of IR communication receiver.
+        "W2" : {"n" : 2, "sensor" : "wireless_receiver:receiving_direction"}, # 2D message orientation msg.
+        "W4" : {"n" : 1, "sensor" : "wireless_receiver:signal"}, # Signal strength
+        "W6" : {"n" : 6, "sensor" : "light_sensor"} # Light sensor (6 sectors).
     },
-    \\ Encoding of the above stimuli. Mainly used when spiking neuron models are employed, to map stimulus 
-    \\ to spike trains. As it is not the case of this example, identity encoding is fixed as a placeholder.
-    \\ In this case, the encoding field could have been completely removed (as it is not used). 
+    # Encoding of the above stimuli. Mainly used when spiking neuron models are employed, to map stimulus 
+    # to spike trains. As it is not the case of this example, identity encoding is fixed as a placeholder.
+    # In this case, the encoding field could have been completely removed (as it is not used). 
     "encoding" : {
         "W1" :{"scheme" : "IdentityEncoding"},
         "W2" :{"scheme" : "IdentityEncoding"},
         "W4" :{"scheme" : "IdentityEncoding"},
         "W6" :{"scheme" : "IdentityEncoding"}
     },
-    \\ Neuron model from spike_swarm_sim.neural_networks.neuron_models.
+    # Neuron model from spike_swarm_sim.neural_networks.neuron_models.
     "neuron_model" : "rate_model",
-    \\ Synapse model from spike_swarm_sim.neural_networks.synapses. Currently, it can be either static for 
-    \\ non-spiking neurons and dynamic for spiking neurons.
+    # Synapse model from spike_swarm_sim.neural_networks.synapses. Currently, it can be either static for 
+    # non-spiking neurons and dynamic for spiking neurons.
     "synapse_model" : "static_synapse",
-    \\ Set of neuron ensembles or layers. 
+    # Set of neuron ensembles or layers. 
     "ensembles": {
         "C1" : {"n" : 10, "params" : {}},
         "C2" : {"n" : 10, "params" : {}},
@@ -83,17 +83,17 @@ models as building blocks of CTRNNs:
         "OUT_COMM_ST" : {"n" : 1, "params" : {}},
         "OUT_MOT" : {"n" : 2, "params" : {}}
     },
-    \\ Set of ouputs, linking actuators to motor ensembles or neurons.
+    # Set of ouputs, linking actuators to motor ensembles or neurons.
     "outputs" : {
-        \\ OUT_COMM_ST generates the action of the IR communication state (RELAY or SEND).
+        # OUT_COMM_ST generates the action of the IR communication state (RELAY or SEND).
         "outC" : {"ensemble" : "OUT_COMM_ST", "actuator" : "wireless_transmitter:state", "enc": "cat"},
-        \\ OUT_COMM generates the action of the IR communication 3D message.
+        # OUT_COMM generates the action of the IR communication 3D message.
         "outA" : {"ensemble" : "OUT_COMM", "actuator" : "wireless_transmitter", "enc": "real"},
-        \\ OUT_MOT generates the action of the wheel actuator (2D).
+        # OUT_MOT generates the action of the wheel actuator (2D).
         "outB" : {"ensemble" : "OUT_MOT", "actuator" : "wheel_actuator", "enc": "real"}
     },
-    \\ Set of ANN synapses, specifying the pre and post synaptic ensembles, the probability of 
-    \\ pairwise neuron connection (p) and whether the connection is trainable or not.
+    # Set of ANN synapses, specifying the pre and post synaptic ensembles, the probability of 
+    # pairwise neuron connection (p) and whether the connection is trainable or not.
     "synapses" :  {
         "W1-c" : {"pre":"W1","post":"C1", "trainable":true, "p":1.0},
         "W2-c" : {"pre":"W2","post":"C1", "trainable":true, "p":1.0},
@@ -116,10 +116,10 @@ models as building blocks of CTRNNs:
         "comm-st" : {"pre":"OUT_COMM","post":"OUT_COMM_ST", "trainable":true, "p":1.0},
         "st-comm" : {"pre":"OUT_COMM_ST","post":"OUT_COMM", "trainable":true, "p":1.0}
     },
-    \\ Decoding of the output. In this case, it decodes firing rates into actions, but in the 
-    \\ case of spiking neurons it maps spike trains into actions. 
+    # Decoding of the output. In this case, it decodes firing rates into actions, but in the 
+    # case of spiking neurons it maps spike trains into actions. 
     "decoding" : {
-        \\ Threshold decoding applies Heaviside mapping of the neurons' output to create binary actions.
+        # Threshold decoding applies Heaviside mapping of the neurons' output to create binary actions.
         "outC" : {"scheme" : "ThresholdDecoding", "params" : {"is_cat" : true}},
         "outA" : {"scheme" : "IdentityDecoding", "params" : {"is_cat" : false}},
         "outB" : {"scheme" : "IdentityDecoding", "params" : {"is_cat" : false}}
@@ -129,41 +129,41 @@ models as building blocks of CTRNNs:
 
 An example of `world` configuration is the following:
 
-```
+```python
 "world":{
-    "world_delay" : 1, \\ Delay of the simulation in visual/render mode.
-    "render_connections" :true, \\ Whether to draw an edge when two agents can communicate.
-    "height":1000, \\ Height of the world.
-    "width": 1000, \\ Width of the world.
-    \\ Set of objects to be instantiated.
+    "world_delay" : 1, # Delay of the simulation in visual/render mode.
+    "render_connections" :true, # Whether to draw an edge when two agents can communicate.
+    "height":1000, # Height of the world.
+    "width": 1000, # Width of the world.
+    # Set of objects to be instantiated.
     "objects" : {
-        \\ Robots 
+        # Robots 
         "robotA" : {
-            "type" : "robot", \\ object type
-            "num_instances" : 10, \\ number of instances
-            "controller" : "neural_controller", \\ Name of the controller. 
-            \\ Set of sensors with their parameters (unspecified parameters are autocompleted with defaults). 
+            "type" : "robot",# object type
+            "num_instances" : 10,# number of instances
+            "controller" : "neural_controller",# Name of the controller. 
+            # Set of sensors with their parameters (unspecified parameters are autocompleted with defaults). 
             "sensors" : {
                 "wireless_receiver" : {"n_sectors":4, "range" : 150,  "msg_length" : 3}, 
                 "light_sensor" : {"n_sectors" : 6}
             },
-            \\ Set of actuators with their parameters (unspecified parameters are autocompleted with defaults).
+            # Set of actuators with their parameters (unspecified parameters are autocompleted with defaults).
             "actuators" : {
                 "wheel_actuator" : {}, 
                 "wireless_transmitter" : {"quantize":true, "range" : 150, "msg_length" : 3}
             },
-            \\ Initialization of robots within the environment.
+            # Initialization of robots within the environment.
             "initializers" : {
                 "positions" : {"name" : "random_uniform", "params" : {"low":400, "high" : 600, "size" : 2}},
                 "orientations" : {"name" : "random_uniform",  "params" : {"low":0, "high" : 6.28, "size" : 1}}
             },
-            \\ Perturbations applied to the robots at runtime. In this case light sensor stimuli of 
-            \\ 8 out of 10 robots is inhibited, so that only 2 robots can sense the light.
+            # Perturbations applied to the robots at runtime. In this case light sensor stimuli of 
+            # 8 out of 10 robots is inhibited, so that only 2 robots can sense the light.
             "perturbations" : {"stimuli_inhibition" : {"affected_robots": 8, "stimuli" : "light_sensor"}},
-            \\ Additional parameters.
+            # Additional parameters.
             "params" : {"trainable" : true}
         },
-        \\ Light source
+        # Light source
         "light_red" : {
             "type" : "light_source",
             "num_instances": 1,
@@ -178,26 +178,26 @@ An example of `world` configuration is the following:
 }
 ```
 An example of `algorithm` configuration is the following (using CTRNN):
-```
+```python
 "algorithm" : {
-    "name" : "GA", \\ Name of the algorithm (Genetic Algorithm in this case).
-    "evolvable_object" : "robotA", \\ Reference to the entity to be evolved.
-    "population_size" : 100, \\ Population size
-    "generations" : 1000, \\ Number of generations.
-    "evaluation_steps" : 1000, \\ Evaluation steps of each simulation trial.
-    "num_evaluations" : 3, \\ Number of trials to estimate the fitness.
-    "fitness_function" : "goto_light", \\ Name of the fitness function.
-    \\ Set of populations. In this case there is only one population, but 
-    \\ multiple population implementing cooperative coevolution are supported.
+    "name" : "GA", # Name of the algorithm (Genetic Algorithm in this case).
+    "evolvable_object" : "robotA", # Reference to the entity to be evolved.
+    "population_size" : 100, # Population size
+    "generations" : 1000, # Number of generations.
+    "evaluation_steps" : 1000, # Evaluation steps of each simulation trial.
+    "num_evaluations" : 3, # Number of trials to estimate the fitness.
+    "fitness_function" : "goto_light", # Name of the fitness function.
+    # Set of populations. In this case there is only one population, but 
+    # multiple population implementing cooperative coevolution are supported.
     "populations" : {
         "p1" : {
-            \\ Parts of the ANN to be evolved.
+            # Parts of the ANN to be evolved.
             "objects" : ["synapses:weights:all", "neurons:bias:all",  "neurons:tau:all", "neurons:gain:all"],
-            \\ Maximum search space bounds.
+            # Maximum search space bounds.
             "max_vals" : [3,  2, 1, 4],
-            \\ Minimum search space bounds.
+            # Minimum search space bounds.
             "min_vals" : [-3, -2, -1, 0.5],
-            \\ Algorithm dependend parameters
+            # Algorithm dependend parameters
             "params": {
                 "encoding" : "real", 
                 "selection_operator" : "nonlin_rank",
