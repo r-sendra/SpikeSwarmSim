@@ -1,9 +1,7 @@
 import numpy as np
 import numpy.linalg as LA
-import pdb
 from spike_swarm_sim.register import sensor_registry
 from spike_swarm_sim.sensors import Sensor
-
 
 """ ALSO INCLUDES NEIGHBORHOOD ORIENTATIONS """
 @sensor_registry(name='neighborhood_pos_sensor')

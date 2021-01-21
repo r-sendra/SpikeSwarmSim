@@ -10,6 +10,3 @@ class OwnPositionSensor(Sensor):
 
     def step(self, neighborhood):
         return self.sensor_owner.pos
-
-
-   

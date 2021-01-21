@@ -104,7 +104,6 @@ class Decoder:
     - Params :
         out_ensembles [dict] : dict mapping output/motor ensembles to 
                 number of neurons.
-        max_time [int] :
         trainable [bool] : whether there are trainable/optimizable 
                 variables in the decoder. # TODO check
         is_cat [bool] : whether the decoded actions are categorical or 
@@ -222,7 +221,7 @@ class LinearPopulationDecoding(Decoder):
     as the filtering of the spike trains.
     The weights are normally optimized and can be addressed by the evolutionary alg. 
     with the query "decoders:weights:all".
-    ================================================================================
+    ====================================================================================
     - Params:
         num_outputs [int] : number of output actions.
         tau_decay [float] : decaying time constant of the neuron's activity after spike. 
@@ -235,7 +234,7 @@ class LinearPopulationDecoding(Decoder):
         w [np.ndarray] :  flattened or vectorized decoding weight matrix.
         action_recodings [np.ndarray] : Data recodings of the decoded activities.
                 # TODO: Provisional, pasar a monitor.
-    ================================================================================
+    ====================================================================================
     """
     def __init__(self, *args, num_outputs=1, tau_decay=30.,
                     tau_rise=5., rest_value=0.5, **kwargs):
