@@ -51,7 +51,7 @@ The configuration file is composed by the following main blocks:
 
 Firstly, an example of ANN declaration through the `topology` field is shown below. It exemplifies the use of rate neuron 
 models as building blocks of CTRNNs:
-```json
+```
 "topology" : {
     "dt" : 0.1, \\ Euler step of the ANN.
     "time_scale" : 20, \\ Ratio between neuronal and environment time scales (neurons are 20 times faster).
@@ -129,7 +129,7 @@ models as building blocks of CTRNNs:
 
 An example of `world` configuration is the following:
 
-```json
+```
 "world":{
     "world_delay" : 1, \\ Delay of the simulation in visual/render mode.
     "render_connections" :true, \\ Whether to draw an edge when two agents can communicate.
@@ -178,7 +178,7 @@ An example of `world` configuration is the following:
 }
 ```
 An example of `algorithm` configuration is the following (using CTRNN):
-```json
+```
 "algorithm" : {
     "name" : "GA", \\ Name of the algorithm (Genetic Algorithm in this case).
     "evolvable_object" : "robotA", \\ Reference to the entity to be evolved.
