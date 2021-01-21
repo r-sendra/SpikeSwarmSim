@@ -11,10 +11,9 @@ class CMA_ES(EvolutionaryAlgorithm):
     The evolution step is defined in the CMA_EA_Population class.
     """
     def __init__(self, populations, *args, **kwargs):
-        populations = {name : CMA_EA_Population(kwargs['population_size'], pop['min_vals'], pop['max_vals'], pop['objects'],\
-                encoding=pop['encoding'], selection_operator=pop['selection_operator'], crossover_operator=pop['crossover_operator'], \
-                mutation_operator=pop['mutation_operator'], mating_operator=pop['mating_operator'], mutation_prob=pop['mutation_prob'],\
-                crossover_prob=pop['crossover_prob'], num_elite=pop['num_elite'],) for name, pop in populations.items()}
+        populations = {name : CMA_EA_Population(kwargs['population_size'],\
+                            pop['min_vals'], pop['max_vals'], pop['objects'], **pop['params'])\
+                            for name, pop in populations.items()}
         super(CMA_ES, self).__init__(populations, *args, **kwargs)
 
     def save_population(self, generation):

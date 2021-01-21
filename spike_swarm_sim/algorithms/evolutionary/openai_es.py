@@ -10,10 +10,9 @@ from spike_swarm_sim.utils import save_pickle, load_pickle
 @algorithm_registry(name='openaiES')
 class OpenAI_ES(EvolutionaryAlgorithm):
     def __init__(self, populations, *args, **kwargs):
-        populations = {name : OpenAI_ES_Population(kwargs['population_size'], pop['min_vals'], pop['max_vals'], pop['objects'],\
-                encoding=pop['encoding'], selection_operator=pop['selection_operator'], crossover_operator=pop['crossover_operator'], \
-                mutation_operator=pop['mutation_operator'], mating_operator=pop['mating_operator'], mutation_prob=pop['mutation_prob'],\
-                crossover_prob=pop['crossover_prob'], num_elite=pop['num_elite'],) for name, pop in populations.items()}
+        populations = {name : OpenAI_ES_Population(kwargs['population_size'], \
+                pop['min_vals'], pop['max_vals'], pop['objects'], **pop['params'])\
+                for name, pop in populations.items()}
         super(OpenAI_ES, self).__init__(populations, *args, **kwargs)
 
     def save_population(self, generation):

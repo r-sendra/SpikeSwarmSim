@@ -84,7 +84,7 @@ class RateModel(NonSpikingNeuronModel):
         self.activation = None
         self.build(tau=tau, gain=gain, bias=bias, activation=activation)
         self.reset()
-    
+        
     def step(self, Isyn):
         self._volt += (self.dt / self.tau) * (Isyn.copy() - self._volt)
         outputs = self.gain * self._volt.copy() + self.bias

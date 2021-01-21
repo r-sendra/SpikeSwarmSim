@@ -79,13 +79,14 @@ def config_checker(cfg_dict):
                 if prb in pop.keys() and not 0 <= pop[prb] <= 1:
                     raise Exception(logging.error('{} of population {} is a probability '\
                         'and must be bounded in [0, 1].'.format(prb, pop_name)))
-            # Check that evo operators are implemented. 
-            for operator in ["selection_operator", "crossover_operator", "mutation_operator", "mating_operator"]:
-                if pop[operator] not in map(lambda x: '_'.join(x.split('_')[:-1]), reg.evo_operators.keys()):
-                    available_ops = map(lambda x: '_'.join(x.split('_')[:-1]), filter(lambda x: \
-                        x.split('_')[-1] == operator.split('_')[0], reg.evo_operators.keys()))
-                    raise Exception(logging.error('Evolutionary {} operator "{}" of population {} is not implemented in the simulator. '\
-                        'Available operators are {}'.format(operator.split('_')[0], pop[operator], pop_name, tuple(available_ops))))
+            #TODO check alg. params
+            # # Check that evo operators are implemented.
+            # for operator in ["selection_operator", "crossover_operator", "mutation_operator", "mating_operator"]:
+            #     if pop[operator] not in map(lambda x: '_'.join(x.split('_')[:-1]), reg.evo_operators.keys()):
+            #         available_ops = map(lambda x: '_'.join(x.split('_')[:-1]), filter(lambda x: \
+            #             x.split('_')[-1] == operator.split('_')[0], reg.evo_operators.keys()))
+            #         raise Exception(logging.error('Evolutionary {} operator "{}" of population {} is not implemented in the simulator. '\
+            #             'Available operators are {}'.format(operator.split('_')[0], pop[operator], pop_name, tuple(available_ops))))
             # Check types of population variables.
         
     #* Checker World
@@ -148,14 +149,14 @@ def config_autocompletion(cfg_dict):
                 'evaluation_steps', 'num_evaluations'], [50, 1000, 600, 1]):
             if var not in alg_dict.keys() or alg_dict[var] is None:
                 alg_dict[var] = default
-        # Autocomplete each population
-        for pop in alg_dict['populations'].values():
-            #! En el futuro comprobar que el alg hereda de Evolutionary Alg.
-            for var, default in zip(['selection_operator', 'crossover_operator', 'mutation_operator',\
-                    'mating_operator', 'mutation_prob', 'crossover_prob', 'num_elite'],\
-                    ['nonlin_rank', 'blxalpha', 'gaussian', 'random', 0.05, 1, 1]):
-                if var not in pop:
-                    pop[var] = default
+        #TODO Autocomplete each population
+        # for pop in alg_dict['populations'].values():
+        #     #! En el futuro comprobar que el alg hereda de Evolutionary Alg.
+        #     for var, default in zip(['selection_operator', 'crossover_operator', 'mutation_operator',\
+        #             'mating_operator', 'mutation_prob', 'crossover_prob', 'num_elite'],\
+        #             ['nonlin_rank', 'blxalpha', 'gaussian', 'random', 0.05, 1, 1]):
+        #         if var not in pop:
+        #             pop[var] = default
 
     #* Autocomplete World config
     world_dict = cfg_dict['world']

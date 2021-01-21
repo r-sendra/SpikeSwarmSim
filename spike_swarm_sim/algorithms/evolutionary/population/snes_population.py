@@ -33,7 +33,7 @@ class SNES_Population(Population):
     def step(self, fitness_vector):
         """ SNES Evolution step applied at the end of each generation to update the population.
         ==================================================================================
-        - Args: 
+        - Args:
             fitness_vector [np.ndarray or list]: array of computed fitness values.
         - Returns: None
         ==================================================================================

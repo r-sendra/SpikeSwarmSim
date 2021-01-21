@@ -1,7 +1,5 @@
 import numpy as np
 
-
-
 def heaviside(x):
     return x * float(x >= 0.0)
 
@@ -10,7 +8,6 @@ def relu(x):
     return x
 
 def sigmoid(x):
-    # return 1. / (1 + np.exp(-x))
     return np.divide(1, 1 + np.exp(-x))
     
 def tanh(x):

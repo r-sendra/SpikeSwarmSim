@@ -14,11 +14,7 @@ class xNES(EvolutionaryAlgorithm):
     """
     def __init__(self, populations, *args, **kwargs):
         populations = {name : xNES_Population(kwargs['population_size'],\
-                pop['min_vals'], pop['max_vals'], pop['objects'],\
-                encoding=pop['encoding'], selection_operator=pop['selection_operator'],\
-                crossover_operator=pop['crossover_operator'], mutation_operator=pop['mutation_operator'], 
-                mating_operator=pop['mating_operator'], mutation_prob=pop['mutation_prob'],\
-                crossover_prob=pop['crossover_prob'], num_elite=pop['num_elite'],)\
+                pop['min_vals'], pop['max_vals'], pop['objects'], **pop['params'])\
                 for name, pop in populations.items()}
         super(xNES, self).__init__(populations, *args, **kwargs)
 
