@@ -14,10 +14,10 @@ Install python3 tkinter:
 sudo apt-get install python3-tk
 ```
 
-Additionally, if a working MPI is installed in your system:
-
-`pip3 install mpi4py==3.0.3`
-
+Additionally, if working MPI is installed in your system:
+```
+pip3 install mpi4py==3.0.3
+```
 
 ## Basic Usage
 The simulator can be run from the command line using the following command:
@@ -40,6 +40,9 @@ The following table shows the possible command line arguments with its abbreviat
 | `verbose` | `v` | Whether to run in verbose mode. |
 
 ## Configuration Files
+In contrast to the command line arguments that configure basic aspects of the simulator, the most relevant configuration 
+settings can be adjusted using JSON configuration files. The file has to be stored in `spike_swarm_sim/config` and is called 
+using the command line argument `--cfg` (or `-f`). 
 The configuration file is composed by the following main blocks:
 - `checkpoint_file`: name of the file where optimization checkpoints are stored.
 
@@ -103,9 +106,9 @@ models as building blocks of CTRNNs:
         "W2-c1" : {"pre":"W2","post":"C2", "trainable":true, "p":1.0},
         "W4-c1" : {"pre":"W4","post":"C2", "trainable":true, "p":1.0},
         "W6-c1" : {"pre":"W6","post":"C2", "trainable":true, "p":1.0},
-        "c-c" : {"pre":"C1","post":"C1", "trainable":true, "p":0.8},
+        "c-c" : {"pre":"C1","post":"C1", "trainable":true, "p":0.7},
         "c2-c2" : {"pre":"C2","post":"C2", "trainable":true, "p":0.7},
-        "c1-c2" : {"pre":"C1","post":"C2", "trainable":true, "p":0.7},
+        "c1-c2" : {"pre":"C1","post":"C2", "trainable":true, "p":1.0},
         "c-mot" : {"pre":"C1","post":"OUT_MOT", "trainable":true, "p":1.0},
         "c2-comm" : {"pre":"C2","post":"OUT_COMM", "trainable":true, "p":1.0},
         "c2-st" : {"pre":"C2","post":"OUT_COMM_ST", "trainable":true, "p":1.0},
@@ -185,7 +188,7 @@ An example of `algorithm` configuration is the following (using CTRNN):
     "population_size" : 100, # Population size
     "generations" : 1000, # Number of generations.
     "evaluation_steps" : 1000, # Evaluation steps of each simulation trial.
-    "num_evaluations" : 3, # Number of trials to estimate the fitness.
+    "num_evaluations" : 5, # Number of trials to estimate the fitness.
     "fitness_function" : "goto_light", # Name of the fitness function.
     # Set of populations. In this case there is only one population, but 
     # multiple population implementing cooperative coevolution are supported.
@@ -194,9 +197,9 @@ An example of `algorithm` configuration is the following (using CTRNN):
             # Parts of the ANN to be evolved.
             "objects" : ["synapses:weights:all", "neurons:bias:all",  "neurons:tau:all", "neurons:gain:all"],
             # Maximum search space bounds.
-            "max_vals" : [3,  2, 1, 4],
+            "max_vals" : [3,  1.5, 0.75, 5],
             # Minimum search space bounds.
-            "min_vals" : [-3, -2, -1, 0.5],
+            "min_vals" : [-3, -1.5, -1, 0.05],
             # Algorithm dependend parameters
             "params": {
                 "encoding" : "real", 
@@ -206,7 +209,7 @@ An example of `algorithm` configuration is the following (using CTRNN):
                 "mating_operator" : "random",
                 "mutation_prob" : 0.05,
                 "crossover_prob" : 0.9,
-                "num_elite" : 2
+                "num_elite" : 3
             }
         }
     }
@@ -228,3 +231,22 @@ parts of the ANN. Currently implemented queries are:
 | `neurons:gain` | `all` | Neuron gain of all neurons (only rate_model). |
 | `neurons:bias` | `all` | Neuron biases of all neurons (only rate_model). |
 | `decoding:weights` | `all` | Decoding weights if using LinearPopulationDecoding in spiking neural nets. |
+
+<br/><br/>
+In the directory `spike_swarm_sim/config` there are the following configuration files stored as examples:
+
+- `experimentA_GA_ctrnn`: Experiment of selecting a leader of a swarm using homogeneous CTRNN controllers. 
+    Optimization is carried out using a Genetic Algorithm (GA).
+- `experimentA_SNES_ctrnn`: Experiment of selecting a leader of a swarm using homogeneous CTRNN controllers. 
+    Optimization is carried out using a Separable Natural Evolution Strategy (SNES).
+- `experimentB_GA_ctrnn`: Experiment of detecting the borderline or frontier members of swarm, using homogeneous CTRNN controllers. 
+    Optimization is carried out using a Genetic Algorithm (GA).
+- `experimentB_SNES_ctrnn`: Experiment of detecting the borderline or frontier members of swarm, using homogeneous CTRNN controllers. 
+    Optimization is carried out using a Separable Natural Evolution Strategy (SNES).
+- `experimentC_GA_ctrnn`: Experiment of orientation consensus of the swarm (reach same heading orientation), using homogeneous CTRNN    controllers. Optimization is carried out using a Genetic Algorithm (GA).
+- `experimentC_SNES_ctrnn`: Experiment of orientation consensus of the swarm (reach same heading orientation), using homogeneous CTRNN    controllers. Optimization is carried out using a Separable Natural Evolution Strategy (SNES).
+
+- `experimentD_GA_ctrnn`: Experiment of following a mobile light that can only be perceived by 2 robots, using homogeneous CTRNN    controllers. Optimization is carried out using a Genetic Algorithm (GA).
+- `experimentD_SNES_ctrnn`:Experiment of following a mobile light that can only be perceived by 2 robots, using homogeneous CTRNN    controllers. Optimization is carried out using a Separable Natural Evolution Strategy (SNES).
+
+<br/><br/>
