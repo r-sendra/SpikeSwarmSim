@@ -17,7 +17,7 @@ from spike_swarm_sim.globals import global_states
 @click.option('-v', '--verbose', default=False, is_flag=True,\
         help='Execute in verbose mode (info msgs enabled).')
 @click.option('-n', '--ncpu', default=1, help='Number of CPU cores.')
-@click.option('-c', '--cfg', default='default', help='Name of the JSON config. file.')
+@click.option('-f', '--cfg', default='default', help='Name of the JSON config. file.')
 def main(render, resume, cfg, debug, eval, verbose, ncpu):
     global_states.set_states(render=render, eval=eval, debug=debug, info=verbose)
     cfg_dict = json_parser(cfg)

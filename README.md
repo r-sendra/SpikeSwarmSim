@@ -4,6 +4,7 @@
 Clone this repository:
 ```
 git clone https://github.com/r-sendra/SpikeSwarmSim.git
+cd SpikeSwarmSim
 ```
 Download the simulator requirements:
 ```
@@ -59,19 +60,21 @@ models as building blocks of CTRNNs:
     "dt" : 0.1, # Euler step of the ANN.
     "time_scale" : 20, # Ratio between neuronal and environment time scales (neurons are 20 times faster).
     "stimuli": { # Declaration of stimuli fed to the ANN. 
-        "W1" : {"n" : 3, "sensor" : "wireless_receiver:msg"}, # 3D message of IR communication receiver.
-        "W2" : {"n" : 2, "sensor" : "wireless_receiver:receiving_direction"}, # 2D message orientation msg.
-        "W4" : {"n" : 1, "sensor" : "wireless_receiver:signal"}, # Signal strength
-        "W6" : {"n" : 6, "sensor" : "light_sensor"} # Light sensor (6 sectors).
+        "I1" : {"n" : 2, "sensor" : "wireless_receiver:msg"}, # 2D message of IR communication receiver.
+        "I2" : {"n" : 2, "sensor" : "wireless_receiver:receiving_direction"}, # 2D message orientation msg.
+        "I3" : {"n" : 1, "sensor" : "wireless_receiver:signal"}, # Signal strength
+        "I4" : {"n" : 1, "sensor" : "wireless_receiver:state"}, # State of the communication.
+        "I5" : {"n" : 6, "sensor" : "light_sensor"} # Light sensor (6 sectors).
     },
     # Encoding of the above stimuli. Mainly used when spiking neuron models are employed, to map stimulus 
     # to spike trains. As it is not the case of this example, identity encoding is fixed as a placeholder.
     # In this case, the encoding field could have been completely removed (as it is not used). 
     "encoding" : {
-        "W1" :{"scheme" : "IdentityEncoding"},
-        "W2" :{"scheme" : "IdentityEncoding"},
-        "W4" :{"scheme" : "IdentityEncoding"},
-        "W6" :{"scheme" : "IdentityEncoding"}
+        "I1" :{"scheme" : "IdentityEncoding"},
+        "I2" :{"scheme" : "IdentityEncoding"},
+        "I3" :{"scheme" : "IdentityEncoding"},
+        "I4" :{"scheme" : "IdentityEncoding"},
+        "I5" :{"scheme" : "IdentityEncoding"}
     },
     # Neuron model from spike_swarm_sim.neural_networks.neuron_models.
     "neuron_model" : "rate_model",
@@ -80,9 +83,9 @@ models as building blocks of CTRNNs:
     "synapse_model" : "static_synapse",
     # Set of neuron ensembles or layers. 
     "ensembles": {
-        "C1" : {"n" : 10, "params" : {}},
-        "C2" : {"n" : 10, "params" : {}},
-        "OUT_COMM" : {"n" : 3, "params" : {}},
+        "H1" : {"n" : 10, "params" : {}},
+        "H2" : {"n" : 10, "params" : {}},
+        "OUT_COMM" : {"n" : 2, "params" : {}},
         "OUT_COMM_ST" : {"n" : 1, "params" : {}},
         "OUT_MOT" : {"n" : 2, "params" : {}}
     },
@@ -98,26 +101,24 @@ models as building blocks of CTRNNs:
     # Set of ANN synapses, specifying the pre and post synaptic ensembles, the probability of 
     # pairwise neuron connection (p) and whether the connection is trainable or not.
     "synapses" :  {
-        "W1-c" : {"pre":"W1","post":"C1", "trainable":true, "p":1.0},
-        "W2-c" : {"pre":"W2","post":"C1", "trainable":true, "p":1.0},
-        "W4-c" : {"pre":"W4","post":"C1", "trainable":true, "p":1.0},
-        "W6-c" : {"pre":"W6","post":"C1", "trainable":true, "p":1.0},
-        "W1-c1" : {"pre":"W1","post":"C2", "trainable":true, "p":1.0},
-        "W2-c1" : {"pre":"W2","post":"C2", "trainable":true, "p":1.0},
-        "W4-c1" : {"pre":"W4","post":"C2", "trainable":true, "p":1.0},
-        "W6-c1" : {"pre":"W6","post":"C2", "trainable":true, "p":1.0},
-        "c-c" : {"pre":"C1","post":"C1", "trainable":true, "p":0.7},
-        "c2-c2" : {"pre":"C2","post":"C2", "trainable":true, "p":0.7},
-        "c1-c2" : {"pre":"C1","post":"C2", "trainable":true, "p":1.0},
-        "c-mot" : {"pre":"C1","post":"OUT_MOT", "trainable":true, "p":1.0},
-        "c2-comm" : {"pre":"C2","post":"OUT_COMM", "trainable":true, "p":1.0},
-        "c2-st" : {"pre":"C2","post":"OUT_COMM_ST", "trainable":true, "p":1.0},
-        "comm-c" : {"pre":"OUT_COMM","post":"C1", "trainable":true, "p":1.0},
-        "mot-c" : {"pre":"OUT_MOT","post":"C1", "trainable":true, "p":1.0},
-        "st-c" : {"pre":"OUT_COMM_ST","post":"C1", "trainable":true, "p":1.0},
-        "comm-comm" : {"pre":"OUT_COMM","post":"OUT_COMM", "trainable":true, "p":1.0},
-        "comm-st" : {"pre":"OUT_COMM","post":"OUT_COMM_ST", "trainable":true, "p":1.0},
-        "st-comm" : {"pre":"OUT_COMM_ST","post":"OUT_COMM", "trainable":true, "p":1.0}
+        "I1-H1" : {"pre":"I1","post":"H1", "trainable":true, "p":1.0},
+        "I2-H1" : {"pre":"I2","post":"H1", "trainable":true, "p":1.0},
+        "I3-H1" : {"pre":"I3","post":"H1", "trainable":true, "p":1.0},
+        "I4-H1" : {"pre":"I4","post":"H1", "trainable":true, "p":1.0},
+        "I5-H1" : {"pre":"I5","post":"H1", "trainable":true, "p":1.0},
+        "H1-H1" : {"pre":"H1","post":"H1", "trainable":true, "p":0.7},
+        "H2-H2" : {"pre":"H2","post":"H2", "trainable":true, "p":0.7},
+        "H1-H2" : {"pre":"H1","post":"H2", "trainable":true, "p":1.0},
+        "H1-MOT" : {"pre":"H1","post":"OUT_MOT", "trainable":true, "p":1.0},
+        "H2-COM" : {"pre":"H2","post":"OUT_COMM", "trainable":true, "p":1.0},
+        "H2-ST" : {"pre":"H2","post":"OUT_COMM_ST", "trainable":true, "p":1.0},
+        "COMM-H1" : {"pre":"OUT_COMM","post":"H1", "trainable":true, "p":0.85},
+        "MOT-H1" : {"pre":"OUT_MOT","post":"H1", "trainable":true, "p":0.85},
+        "ST-H1" : {"pre":"OUT_COMM_ST","post":"H1", "trainable":true, "p":0.85},
+        "MOT-MOT" : {"pre":"OUT_MOT", "post":"OUT_MOT", "trainable":true, "p":1.0},
+        "COMM-COMM" : {"pre":"OUT_COMM", "post":"OUT_COMM", "trainable":true, "p":1.0},
+        "COMM-ST" : {"pre":"OUT_COMM", "post":"OUT_COMM_ST", "trainable":true, "p":1.0},
+        "ST-COMM" : {"pre":"OUT_COMM_ST","post":"OUT_COMM", "trainable":true, "p":1.0}
     },
     # Decoding of the output. In this case, it decodes firing rates into actions, but in the 
     # case of spiking neurons it maps spike trains into actions. 
